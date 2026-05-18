@@ -1,5 +1,55 @@
-# Rules to convert a .h file to inline RST documentation
+# Samurai-Minhaz Ultimate Optimization for Android 16 (Baklava)
+# Target Device: samurai (Realme X2 Pro)
 
+# Performance & Graphics Optimization
+TARGET_USES_VULKAN := true
+TARGET_USES_ION := true
+BOARD_KERNEL_PAGESIZE := 16384
+PRODUCT_MAX_PAGE_SIZE_SUPPORTED := 16384
+PRODUCT_NO_BIONIC_64K_INTEROP := true
+
+# Security & Boot Configuration
+BOARD_AVB_ENABLE := false
+BOARD_BUILD_DISABLED_VBMETAIMAGE := true
+BOARD_KERNEL_CMDLINE += androidboot.selinux=enforcing
+PRODUCT_BUILD_PROP_FLAGS += ro.rom.maintainer=Samurai-Minhaz
+
+# System Properties: Ultra-Smooth 90Hz & Lag Fix
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.surface_flinger.set_idle_timer_ms=4000 \
+    ro.surface_flinger.set_touch_timer_ms=200 \
+    ro.vendor.perf.scroll_opt=1 \
+    windowsmgr.max_events_per_sec=150
+
+# System Properties: Camera HAL3 & GCam Support
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.camera.HAL3.enabled=1 \
+    persist.vendor.camera.eis.enable=1 \
+    persist.vendor.camera.privapp.list=com.google.android.GoogleCamera,com.google.android.GoogleCamera.BSG,com.google.android.GoogleCamera.LMC
+
+# System Properties: Premium Audio Stack
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.audio.hifi=true \
+    ro.vendor.audio.sdk.fluencetype=none
+
+# Play Integrity & Device Spoofing (Pixel 9 Pro - Baklava Ready)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.model=Pixel 9 Pro \
+    ro.product.brand=google \
+    ro.product.manufacturer=Google \
+    ro.build.fingerprint=google/komodo/komodo:15/AP3A.241005.015/12534744:user/release-keys \
+    ro.build.id=AP3A.241005.015 \
+    ro.build.type=user \
+    ro.build.tags=release-keys
+
+# Kernel Defconfig Injections (Performance & Memory)
+# CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
+# CONFIG_ZRAM=y
+# CONFIG_LZ4_COMPRESSION=y
+# CONFIG_LRU_GEN=y
+# CONFIG_LRU_GEN_ENABLED=y
+
+# Rules to convert a .h file to inline RST documentation
 SRC_DIR=$(srctree)/Documentation/media
 PARSER = $(srctree)/Documentation/sphinx/parse-headers.pl
 UAPI = $(srctree)/include/uapi/linux

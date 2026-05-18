@@ -1,3 +1,42 @@
+# Samurai-Minhaz Android 16 (Baklava) Optimization for Realme X2 Pro (samurai)
+# Target: PixelOS / QPR-Ready | 16KB Page Size Architecture
+
+# Performance & Hardware Flags
+TARGET_USES_VULKAN := true
+TARGET_USES_ION := true
+BOARD_AVB_ENABLE := false
+PRODUCT_BUILD_PROP_FLAGS += ro.rom.maintainer=Samurai-Minhaz
+
+# Android 16 Memory & Architecture
+PRODUCT_MAX_PAGE_SIZE_SUPPORTED := 16384
+BOARD_KERNEL_PAGESIZE := 16384
+TARGET_NO_BIONIC_64K_INTEROP := true
+
+# System Properties: Display, Performance, Camera, and Audio
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.surface_flinger.set_idle_timer_ms=4000 \
+    ro.surface_flinger.set_touch_timer_ms=200 \
+    ro.vendor.perf.scroll_opt=1 \
+    windowsmgr.max_events_per_sec=150 \
+    persist.vendor.camera.HAL3.enabled=1 \
+    persist.vendor.camera.eis.enable=1 \
+    persist.vendor.camera.privapp.list=com.google.android.GoogleCamera,com.google.android.GoogleCamera.BSG,com.google.android.GoogleCamera.LMC \
+    persist.vendor.audio.hifi=true \
+    ro.vendor.audio.sdk.fluencetype=none \
+    ro.vendor.api_level=202504 \
+    ro.vendor.lib64.16kb_aligned=true \
+    dalvik.vm.dex2oat64-threads=4 \
+    ro.product.model=Pixel_9_Pro_XL \
+    ro.product.brand=google \
+    ro.product.manufacturer=google
+
+# Kernel Defconfig Injections (A16 Performance)
+# CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
+# CONFIG_ZRAM=y
+# CONFIG_LZ4_COMPRESSION=y
+# CONFIG_LRU_GEN=y
+# CONFIG_LRU_GEN_ENABLED=y
+
 # -*- makefile -*-
 # Makefile for Sphinx documentation
 #

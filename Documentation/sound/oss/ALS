@@ -1,66 +1,140 @@
-ALS-007/ALS-100/ALS-200 based sound cards
-=========================================
+# BoardConfig.mk (samurai - Android 16 Baklava Optimization)
+BOARD_VNDK_VERSION := current
+PRODUCT_SHIPPING_API_LEVEL := 36
+BOARD_API_LEVEL := 202504
+BOARD_KERNEL_PAGESIZE := 16384
+TARGET_NO_BIONIC_64K_INTEROP := true
+BOARD_AVB_ENABLE := false
+TARGET_USES_VULKAN := true
+TARGET_USES_ION := true
+DEVICE_MANIFEST_FILE := device/realme/samurai/manifest.xml
+DEVICE_MATRIX_FILE := device/realme/samurai/compatibility_matrix.xml
+BOARD_SYSTEMSDK_VERSIONS := 36
+TARGET_SCREEN_DENSITY := 400
+BOARD_USES_ADRENO := true
+BOARD_USES_ALSA_AUDIO := true
+TARGET_COPY_OUT_VENDOR := vendor
+BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
 
-Support for sound cards based around the Avance Logic
-ALS-007/ALS-100/ALS-200 chip is included.  These chips are a single
-chip PnP sound solution which is mostly hardware compatible with the
-Sound Blaster 16 card, with most differences occurring in the use of
-the mixer registers.  For this reason the ALS code is integrated
-as part of the Sound Blaster 16 driver (adding only 800 bytes to the
-SB16 driver).
+# device.mk (samurai - Android 16 Baklava Optimization)
+PRODUCT_MAX_PAGE_SIZE_SUPPORTED := 16384
+PRODUCT_NO_BIONIC_64K_INTEROP := true
+PRODUCT_BUILD_PROP_FLAGS += ro.rom.maintainer=Samurai-Minhaz
+PRODUCT_PACKAGES += \
+    android.hardware.health-service.samurai \
+    android.hardware.power-service.samurai \
+    android.hardware.vibrator-service.samurai \
+    android.hardware.lights-service.samurai \
+    android.hardware.audio.service-aidl.samurai \
+    android.hardware.audio.effect.service-aidl.samurai \
+    android.hardware.composer.hwc3-service.samurai
 
-To use an ALS sound card under Linux, enable the following options as
-modules in the sound configuration section of the kernel config:
-  - 100% Sound Blaster compatibles (SB16/32/64, ESS, Jazz16) support
-  - FM synthesizer (YM3812/OPL-3) support 
-  - standalone MPU401 support may be required for some cards; for the
-    ALS-007, when using isapnptools, it is required
-Since the ALS-007/100/200 are PnP cards, ISAPnP support should probably be
-compiled in.  If kernel level PnP support is not included, isapnptools will
-be required to configure the card before the sound modules are loaded.
+PRODUCT_COPY_FILES += \
+    device/realme/samurai/rootdir/etc/fstab.samurai:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.samurai \
+    device/realme/samurai/rootdir/etc/init.samurai.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.samurai.rc
 
-When using kernel level ISAPnP, the kernel should correctly identify and
-configure all resources required by the card when the "sb" module is
-inserted.  Note that the ALS-007 does not have a 16 bit DMA channel and that
-the MPU401 interface on this card uses a different interrupt to the audio
-section.  This should all be correctly configured by the kernel; if problems
-with the MPU401 interface surface, try using the standalone MPU401 module,
-passing "0" as the "sb" module's "mpu_io" module parameter to prevent the
-soundblaster driver attempting to register the MPU401 itself.  The onboard
-synth device can be accessed using the "opl3" module.
+# vendor.prop (samurai - Performance & A16 UI Optimization)
+ro.surface_flinger.set_idle_timer_ms=4000
+ro.surface_flinger.set_touch_timer_ms=200
+ro.vendor.perf.scroll_opt=1
+windowsmgr.max_events_per_sec=150
+persist.vendor.camera.HAL3.enabled=1
+persist.vendor.camera.eis.enable=1
+persist.vendor.camera.privapp.list=com.google.android.GoogleCamera,com.google.android.GoogleCamera.BSG,com.google.android.GoogleCamera.LMC
+persist.vendor.audio.hifi=true
+ro.vendor.audio.sdk.fluencetype=none
+ro.product.model=Pixel 9 Pro
+ro.product.brand=google
+ro.product.manufacturer=Google
+ro.build.fingerprint=google/lynx/lynx:14/UQ1A.240205.002/11224291:user/release-keys
+ro.vendor.api_level=202504
+ro.vendor.lib64.16kb_aligned=true
+dalvik.vm.dex2oat64-threads=8
+dalvik.vm.heapstartsize=16m
+dalvik.vm.heapgrowthlimit=256m
+dalvik.vm.heapsize=512m
+ro.config.low_ram=false
+ro.surface_flinger.has_wide_color_display=true
+ro.surface_flinger.has_HDR_display=true
 
-If isapnptools is used to wake up the sound card (as in 2.2.x), the settings
-of the card's resources should be passed to the kernel modules ("sb", "opl3"
-and "mpu401") using the module parameters.  When configuring an ALS-007, be
-sure to specify different IRQs for the audio and MPU401 sections - this card
-requires they be different.  For "sb", "io", "irq" and "dma" should be set
-to the same values used to configure the audio section of the card with
-isapnp.  "dma16" should be explicitly set to "-1" for an ALS-007 since this
-card does not have a 16 bit dma channel; if not specified the kernel will
-default to using channel 5 anyway which will cause audio not to work. 
-"mpu_io" should be set to 0.  The "io" parameter of the "opl3" module should
-also agree with the setting used by isapnp.  To get the MPU401 interface
-working on an ALS-007 card, the "mpu401" module will be required since this
-card uses separate IRQs for the audio and MPU401 sections and there is no
-parameter available to pass a different IRQ to the "sb" driver (whose
-inbuilt MPU401 driver would otherwise be fine).  Insert the mpu401 module
-passing appropriate values using the "io" and "irq" parameters.
+# samurai_defconfig (Kernel Optimization for A16)
+CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
+CONFIG_ZRAM=y
+CONFIG_LZ4_COMPRESSION=y
+CONFIG_ARM64_16K_PAGES=y
+CONFIG_LRU_GEN=y
+CONFIG_LRU_GEN_ENABLED=y
+CONFIG_BPF_SYSCALL=y
+CONFIG_BPF_JIT=y
+CONFIG_CGROUP_BPF=y
+CONFIG_NET_CLS_BPF=y
+CONFIG_NET_ACT_BPF=y
+CONFIG_DEBUG_INFO_BTF=y
+CONFIG_KASAN=n
+CONFIG_CFI_CLANG=y
+CONFIG_ANDROID_BINDER_IPC=y
+CONFIG_ANDROID_BINDERFS=y
+CONFIG_SCHED_WALT=y
+CONFIG_HZ_300=y
 
-The resulting sound driver will provide the following capabilities:
-  - 8 and 16 bit audio playback
-  - 8 and 16 bit audio recording
-  - Software selection of record source (line in, CD, FM, mic, master)
-  - Record and playback of midi data via the external MPU-401
-  - Playback of midi data using inbuilt FM synthesizer
-  - Control of the ALS-007 mixer via any OSS-compatible mixer programs. 
-    Controls available are Master (L&R), Line in (L&R), CD (L&R), 
-    DSP/PCM/audio out (L&R), FM (L&R) and Mic in (mono).
+# manifest.xml (VINTF AIDL Migration for A16)
+<manifest version="8.0" type="device" target-level="202504">
+    <hal format="aidl">
+        <name>android.hardware.audio</name>
+        <version>3</version>
+        <interface>
+            <name>IDevicesFactory</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.health</name>
+        <version>3</version>
+        <interface>
+            <name>IHealth</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.power</name>
+        <version>5</version>
+        <interface>
+            <name>IPower</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.vibrator</name>
+        <version>2</version>
+        <interface>
+            <name>IVibrator</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+</manifest>
 
-Jonathan Woithe
-jwoithe@just42.net
-30 March 1998
+# Android.bp (16KB Alignment & AIDL Support)
+cc_library_shared {
+    name: "libvendor_samurai_audio_ext",
+    vendor: true,
+    srcs: ["samurai_audio_utils.cpp"],
+    shared_libs: [
+        "libbase",
+        "libutils",
+        "liblog",
+        "android.hardware.audio.common-V3-ndk",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+        "-fvisibility=hidden",
+    ],
+    header_abi_checker: {
+        enabled: true,
+    },
+}
 
-Modified 2000-02-26 by Dave Forrest, drf5n@virginia.edu to add ALS100/ALS200
-Modified 2000-04-10 by Paul Laufer, pelaufer@csupomona.edu to add ISAPnP info.
-Modified 2000-11-19 by Jonathan Woithe, jwoithe@just42.net
- - updated information for kernel 2.4.x.
+# fstab.samurai (A16 Metadata Encryption)
+/dev/block/by-name/userdata /data f2fs noatime,nosuid,nodev,discard,usrquota,grpquota wait,check,quota,latemount,resize,reservedsize=128M,checkpoint=fs,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,metadata_encryption=aes-256-xts,keydirectory=/metadata/vold/metadata_encryption
+/dev/block/by-name/metadata /metadata ext4 noatime,nosuid,nodev,discard wait,check,formattable,first_stage_mount
+/dev/block/by-name/misc /misc emmc defaults defaults
